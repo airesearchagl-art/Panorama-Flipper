@@ -231,6 +231,25 @@ body {
   flex-wrap: wrap;
 }
 
+.viewer-note {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.2rem 1.5rem;
+}
+
+.viewer-note__title {
+  margin: 0 0 0.5rem;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+}
+
+.viewer-note__body {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
 .privacy-note {
   text-align: center;
   color: var(--text-muted);

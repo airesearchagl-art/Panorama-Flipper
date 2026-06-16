@@ -58,20 +58,20 @@ function handleFile(file) {
   clearError();
 
   if (!file) {
-    showError("No file was selected.");
+    showError("画像を選択してください。");
     return;
   }
 
   if (!isSupportedFile(file)) {
-    showError("Unsupported file format. Please use PNG, JPG/JPEG, or WebP.");
+    showError("対応していないファイル形式です。PNG、JPG/JPEG、WebPをご利用ください。");
     return;
   }
 
   const reader = new FileReader();
-  reader.onerror = () => showError("Failed to read the file. Please try again.");
+  reader.onerror = () => showError("ファイルの読み込みに失敗しました。再度お試しください。");
   reader.onload = (event) => {
     const img = new Image();
-    img.onerror = () => showError("Failed to load the image. The file may be corrupted.");
+    img.onerror = () => showError("画像の読み込みに失敗しました。ファイルが破損している可能性があります。");
     img.onload = () => onImageLoaded(img, file);
     img.src = event.target.result;
   };
@@ -115,12 +115,12 @@ function renderMeta(img, file) {
 
   const deviation = Math.abs(ratio - PANORAMA_ASPECT_TARGET) / PANORAMA_ASPECT_TARGET;
   if (deviation <= PANORAMA_ASPECT_TOLERANCE) {
-    metaPanorama.textContent = "360° panorama likely";
+    metaPanorama.textContent = "360°パノラマ画像の可能性が高い";
   } else {
-    metaPanorama.textContent = "Standard image or non-2:1 panorama";
+    metaPanorama.textContent = "通常画像、または2:1比率ではない画像";
   }
 
-  metaFiletype.textContent = file.type || `(unknown, .${state.fileExtension})`;
+  metaFiletype.textContent = file.type || `(不明, .${state.fileExtension})`;
 }
 
 /* ---------- Canvas rendering ---------- */
@@ -157,7 +157,7 @@ function resetFlippedCanvas() {
 
 function flipHorizontal() {
   if (!state.originalImage) {
-    showError("Please load an image before flipping.");
+    showError("画像を選択してください。");
     return;
   }
   clearError();
@@ -170,13 +170,13 @@ function flipHorizontal() {
 /* ---------- Download ---------- */
 function downloadCanvas(canvas, mimeType, extension) {
   if (!state.isFlipped) {
-    showError("Please flip the image before downloading.");
+    showError("反転後の画像がまだ作成されていません。");
     return;
   }
   canvas.toBlob(
     (blob) => {
       if (!blob) {
-        showError("Failed to generate the downloadable image.");
+        showError("ダウンロード用の画像生成に失敗しました。");
         return;
       }
       const url = URL.createObjectURL(blob);

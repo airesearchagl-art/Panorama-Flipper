@@ -1,90 +1,79 @@
 # Panorama Flipper
 
-A browser-based tool to flip 360° equirectangular panorama images horizontally — directly in the image file, not just in a viewer setting.
+ブラウザだけで動く、360°エクイレクタングラー（equirectangular）パノラマ画像の左右反転ツールです。ビューアの設定に頼らず、画像ファイルそのものを反転します。
 
-## Why
+## 解決する課題
 
-Renderers such as D5 Render, Twinmotion, Lumion, Enscape, and SketchUp-based pipelines sometimes export 360° panoramas with reversed orientation (mirrored left/right). Fixing this at the viewer level isn't always possible or portable. Panorama Flipper bakes the horizontal flip into the image itself, so the corrected file works consistently across any panorama viewer.
+D5 Render、Twinmotion、Lumion、Enscape、SketchUp系のレンダリングパイプラインから書き出した360°パノラマ画像が、左右反転した状態で出力されることがあります。ビューア側の設定で都度補正するのは手間がかかり、配布先によって表示が揃わない原因にもなります。Panorama Flipperは反転処理を画像ファイル自体に焼き込むため、どのビューアで開いても一貫した見え方になります。
 
-## Features
+## 主な機能
 
-- Load images via file picker or drag & drop
-- Supports PNG, JPG/JPEG, and WebP
-- Horizontal flip rendered with Canvas, preserving original dimensions and quality
-- Side-by-side (or stacked on narrow screens) Original vs Flipped comparison
-- Image info panel: file name, dimensions, aspect ratio, 2:1 panorama detection, file type
-- Download flipped result as PNG or JPG (JPEG quality 0.92)
-- Reset to start over
-- 100% client-side — no image is ever uploaded to a server
+- ファイル選択またはドラッグ＆ドロップでの画像読み込み
+- PNG、JPG/JPEG、WebPに対応
+- Canvasによる左右反転（元の画像サイズ・画質を維持）
+- 元画像／反転後画像の比較プレビュー（画面が狭い場合は縦並び）
+- 画像情報パネル（ファイル名、画像サイズ、アスペクト比、パノラマ判定、ファイル形式）
+- PNG／JPG（品質0.92）でのダウンロード
+- リセット機能
+- 画像処理は100%ブラウザ内で完結し、サーバーへのアップロードは行わない
 
-## Usage
+## 使い方
 
-1. Open the app (locally or via a deployed URL).
-2. Drop a panorama image onto the drop area, or click "choose file".
-3. Review the detected image info (dimensions, aspect ratio, panorama likelihood).
-4. Click **Flip Horizontal** to generate the flipped version.
-5. Compare Original vs Flipped previews.
-6. Click **Download PNG** or **Download JPG** to save the result.
-7. Click **Reset** to clear and start over with a new image.
+1. アプリを開く（ローカル、またはデプロイ済みURL）。
+2. ドロップエリアに画像をドラッグ＆ドロップ、または「ファイルを選択」をクリック。
+3. 画像情報（サイズ、アスペクト比、パノラマ判定）を確認。
+4. 「左右反転」をクリックして反転画像を生成。
+5. 「元画像」と「左右反転後」のプレビューを比較。
+6. 「PNGでダウンロード」または「JPGでダウンロード」で保存。
+7. 「リセット」で初期状態に戻し、別の画像を読み込む。
 
-## Running locally
+## ローカルでの起動方法
 
-No build step or dependencies are required.
+ビルドや依存パッケージは不要です。
 
 ```bash
 git clone https://github.com/airesearchagl-art/Panorama-Flipper.git
 cd Panorama-Flipper
 ```
 
-Then simply open `index.html` in a browser, or serve the folder with any static file server, e.g.:
+`index.html` をブラウザで直接開くか、任意の静的サーバーで配信してください。
 
 ```bash
 python3 -m http.server 8000
 ```
 
-and visit `http://localhost:8000`.
+`http://localhost:8000` でアクセスできます。
 
-## Deployment
+## Vercelへのデプロイ方法
 
-### GitHub Pages
+1. Vercelダッシュボードを開く。
+2. 「Add New Project」をクリック。
+3. このGitHubリポジトリ（`airesearchagl-art/Panorama-Flipper`）をImportする。
+4. Framework Presetを「Other」に設定。
+5. Build Commandは空欄のままにする。
+6. Output Directoryは `.` または空欄に設定。
+7. Production Branchを `main` に設定。
+8. 「Deploy」をクリック。
 
-1. Push this repository to GitHub.
-2. In repository Settings → Pages, set the source to the `main` branch (root).
-3. The app will be served at `https://<user>.github.io/Panorama-Flipper/`.
+このプロジェクトは静的なHTML/CSS/JavaScriptアプリであり、ビルドステップは不要です。デプロイ後は `https://xxxx.vercel.app` のようなURLでアクセスできるようになり、以後 `main` ブランチへpushすると自動的に本番デプロイされます。
 
-### Vercel
+## プライバシー方針
 
-1. Import the repository in Vercel.
-2. Framework preset: "Other" (static site, no build command needed).
-3. Output directory: repository root.
-4. Deploy.
+すべての画像処理はブラウザのCanvas APIを使ってローカルで実行されます。画像はサーバーや第三者サービスにアップロードされることはありません。
 
-## Deploy to Vercel
+## ビューアでの見え方に関する注意
 
-1. Open Vercel dashboard.
-2. Click "Add New Project".
-3. Import this GitHub repository (`airesearchagl-art/Panorama-Flipper`).
-4. Set Framework Preset to "Other".
-5. Leave Build Command empty.
-6. Set Output Directory to `.` or leave it empty.
-7. Set Production Branch to `main`.
-8. Click Deploy.
+Panorama Flipper上で元画像と反転後画像を見比べて、画像ファイル自体の左右反転処理は正しく完了しています。別の360°ビューアで開いた際に再び反転して見える場合は、ファイル自体ではなく、そのビューア側の球体マッピング処理、左右反転（ミラー）設定、または表示仕様によるものである可能性があります。お使いのビューアの表示設定をご確認ください。
 
-This project is a static HTML/CSS/JavaScript app and does not require a build step. Once connected, every push to `main` triggers an automatic production deployment, and the app becomes available at a URL like `https://xxxx.vercel.app`.
+## 今後の拡張案
 
-## Privacy
+- 複数画像の一括反転
+- 上下反転
+- 90° / 180°回転
+- EXIF / メタデータの保持
+- 画像圧縮
+- 反転前後のスライダー比較
 
-All image processing happens locally in your browser using the Canvas API. Images are never uploaded to any server or third-party service.
+## ライセンス
 
-## Future extensions
-
-- Batch flipping of multiple images at once
-- Vertical (top-bottom) flip
-- 90° / 180° rotation
-- EXIF / metadata preservation
-- Image compression options
-- Before/after slider comparison
-
-## License
-
-MIT License — see [LICENSE](LICENSE).
+MIT License — [LICENSE](LICENSE) を参照してください。
