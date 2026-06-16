@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Panorama Flipper</title>
-<meta name="description" content="360°パノラマ画像をブラウザ上で左右反転するツール。アップロードなし、ブラウザ内で完全処理。" />
+<meta name="description" content="360°パノラマ画像をブラウザ上で一括変換・回転できるツール。アップロードなし、ブラウザ内で完全処理。" />
 <link rel="icon" type="image/svg+xml" href="assets/icon.svg" />
 <link rel="stylesheet" href="css/style.css" />
 </head>
@@ -13,28 +13,90 @@
   <div class="app-header__brand">
     <img src="assets/icon.svg" alt="" class="app-header__icon" />
     <h1>Panorama Flipper</h1>
+    <span class="app-header__version">v1.2</span>
   </div>
-  <p class="app-header__tagline">360°パノラマ画像をブラウザ上で左右反転するツール</p>
+  <p class="app-header__tagline">360°パノラマ画像をブラウザ上で一括変換・回転するツール</p>
 </header>
 
 <main class="app-main">
+
+  <!-- Drop area -->
   <section id="drop-area" class="drop-area" aria-label="画像アップロード領域">
-    <input type="file" id="file-input" accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp" hidden />
+    <input type="file" id="file-input"
+      accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp"
+      multiple hidden />
     <div class="drop-area__content">
       <svg class="drop-area__icon" viewBox="0 0 24 24" width="48" height="48" aria-hidden="true">
         <path fill="currentColor" d="M12 16l-5-5h3V4h4v7h3l-5 5zm-7 2h14v2H5v-2z"/>
       </svg>
       <p class="drop-area__title">ここにパノラマ画像をドロップ</p>
       <p class="drop-area__or">または</p>
-      <button type="button" id="choose-file-btn" class="btn btn--primary">ファイルを選択</button>
-      <p class="drop-area__formats">対応形式：PNG、JPG / JPEG、WebP</p>
+      <button type="button" id="choose-file-btn" class="btn btn--primary">ファイルを選択（複数可）</button>
+      <p class="drop-area__formats">対応形式：PNG、JPG / JPEG、WebP　|　複数ファイル同時読み込み対応</p>
     </div>
   </section>
 
   <p id="error-message" class="error-message" role="alert" hidden></p>
 
-  <section id="meta-panel" class="meta-panel" hidden aria-label="画像情報">
-    <h2 class="meta-panel__title">画像情報</h2>
+  <!-- Transform mode -->
+  <section id="mode-panel" class="mode-panel" hidden aria-label="変換モード">
+    <h2 class="panel-title">変換モード</h2>
+    <div class="mode-buttons" role="group" aria-label="変換モードの選択">
+      <button type="button" class="mode-btn active" data-mode="flip">左右反転</button>
+      <button type="button" class="mode-btn" data-mode="rot180">180°回転</button>
+      <button type="button" class="mode-btn" data-mode="rot90">90°回転</button>
+      <button type="button" class="mode-btn" data-mode="rot-90">-90°回転</button>
+    </div>
+  </section>
+
+  <!-- Image list -->
+  <section id="image-list-section" class="image-list-section" hidden aria-label="画像リスト">
+    <div class="image-list-header">
+      <h2 class="panel-title">画像リスト</h2>
+      <span id="image-count" class="image-count"></span>
+    </div>
+    <div id="image-list" class="image-list" role="listbox" aria-label="読み込んだ画像の一覧"></div>
+  </section>
+
+  <!-- Controls -->
+  <section id="controls" class="controls" hidden aria-label="操作">
+    <div class="controls__row">
+      <button type="button" id="convert-one-btn" class="btn btn--primary">選択画像を変換</button>
+      <button type="button" id="convert-all-btn" class="btn btn--primary">すべて変換</button>
+    </div>
+    <div class="controls__row">
+      <button type="button" id="download-png-btn" class="btn" disabled>PNGでダウンロード</button>
+      <button type="button" id="download-jpg-btn" class="btn" disabled>JPGでダウンロード</button>
+    </div>
+    <div class="controls__row">
+      <button type="button" id="batch-png-btn" class="btn" disabled>PNGを一括ダウンロード</button>
+      <button type="button" id="batch-jpg-btn" class="btn" disabled>JPGを一括ダウンロード</button>
+    </div>
+    <div class="controls__row">
+      <button type="button" id="reset-btn" class="btn btn--ghost">リセット</button>
+    </div>
+    <p id="status-message" class="status-message" hidden></p>
+  </section>
+
+  <!-- Preview -->
+  <section id="preview-area" class="preview-area" hidden aria-label="画像比較プレビュー">
+    <div class="preview-pane">
+      <h3>元画像</h3>
+      <div class="preview-pane__canvas-wrap">
+        <canvas id="original-canvas"></canvas>
+      </div>
+    </div>
+    <div class="preview-pane">
+      <h3 id="flipped-label">左右反転後</h3>
+      <div class="preview-pane__canvas-wrap">
+        <canvas id="flipped-canvas"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <!-- Meta panel -->
+  <section id="meta-panel" class="meta-panel" hidden aria-label="選択画像の情報">
+    <h2 class="meta-panel__title">画像情報（選択中）</h2>
     <dl class="meta-panel__grid">
       <div><dt>ファイル名</dt><dd id="meta-filename">—</dd></div>
       <div><dt>画像サイズ</dt><dd id="meta-dimensions">—</dd></div>
@@ -44,38 +106,26 @@
     </dl>
   </section>
 
-  <section id="preview-area" class="preview-area" hidden aria-label="画像比較プレビュー">
-    <div class="preview-pane">
-      <h3>元画像</h3>
-      <div class="preview-pane__canvas-wrap">
-        <canvas id="original-canvas"></canvas>
-      </div>
-    </div>
-    <div class="preview-pane">
-      <h3>左右反転後</h3>
-      <div class="preview-pane__canvas-wrap">
-        <canvas id="flipped-canvas"></canvas>
-      </div>
-    </div>
-  </section>
-
-  <section id="controls" class="controls" hidden aria-label="操作">
-    <button type="button" id="flip-btn" class="btn btn--primary">左右反転</button>
-    <button type="button" id="download-png-btn" class="btn" disabled>PNGでダウンロード</button>
-    <button type="button" id="download-jpg-btn" class="btn" disabled>JPGでダウンロード</button>
-    <button type="button" id="reset-btn" class="btn btn--ghost">リセット</button>
-  </section>
-
+  <!-- Viewer note -->
   <section class="viewer-note" aria-label="ビューアでの見え方について">
     <h2 class="viewer-note__title">ビューアでの見え方について</h2>
     <p class="viewer-note__body">
-      このツールは画像ファイル自体を左右反転します。ただし、360°パノラマビューアによっては、球体マッピングや表示設定の都合により、読み込み時に左右反転して表示される場合があります。お使いのビューア側で「左右反転」「ミラー」「反転」といった表示設定がONになっていないか、念のためご確認ください。
+      このツールは画像ファイル自体を変換します。ただし、360°パノラマビューアによっては、球体マッピングや表示設定の都合により、読み込み時に意図と異なる表示になる場合があります。お使いのビューア側で「左右反転」「ミラー」「反転」といった表示設定がONになっていないかご確認ください。
+    </p>
+  </section>
+
+  <!-- Rotation note -->
+  <section class="rotation-note" aria-label="90°回転について">
+    <h2 class="rotation-note__title">90°回転について</h2>
+    <p class="rotation-note__body">
+      90°回転および-90°回転は画像の幅と高さを入れ替えるため、2:1比率の360°パノラマ画像ではビューア上で正しく表示されない場合があります。通常のパノラマ補正では「左右反転」または「180°回転」を使用してください。
     </p>
   </section>
 
   <p class="privacy-note">すべての処理はブラウザ内で完結します。画像はサーバーにアップロードされません。</p>
 </main>
 
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 <script src="js/app.js" defer></script>
 </body>
 </html>
