@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Panorama Flipper</title>
+<meta name="description" content="Flip 360° panoramic images horizontally in your browser. No upload, fully local processing." />
+<link rel="icon" type="image/svg+xml" href="assets/icon.svg" />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<header class="app-header">
+  <div class="app-header__brand">
+    <img src="assets/icon.svg" alt="" class="app-header__icon" />
+    <h1>Panorama Flipper</h1>
+  </div>
+  <p class="app-header__tagline">Flip 360° panoramic images horizontally in your browser.</p>
+</header>
+
+<main class="app-main">
+  <section id="drop-area" class="drop-area" aria-label="Image upload area">
+    <input type="file" id="file-input" accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp" hidden />
+    <div class="drop-area__content">
+      <svg class="drop-area__icon" viewBox="0 0 24 24" width="48" height="48" aria-hidden="true">
+        <path fill="currentColor" d="M12 16l-5-5h3V4h4v7h3l-5 5zm-7 2h14v2H5v-2z"/>
+      </svg>
+      <p class="drop-area__title">Drop panorama image here</p>
+      <p class="drop-area__or">or</p>
+      <button type="button" id="choose-file-btn" class="btn btn--primary">choose file</button>
+      <p class="drop-area__formats">Supported formats: PNG, JPG / JPEG, WebP</p>
+    </div>
+  </section>
+
+  <p id="error-message" class="error-message" role="alert" hidden></p>
+
+  <section id="meta-panel" class="meta-panel" hidden aria-label="Image information">
+    <h2 class="meta-panel__title">Image Info</h2>
+    <dl class="meta-panel__grid">
+      <div><dt>File name</dt><dd id="meta-filename">—</dd></div>
+      <div><dt>Dimensions</dt><dd id="meta-dimensions">—</dd></div>
+      <div><dt>Aspect ratio</dt><dd id="meta-aspect">—</dd></div>
+      <div><dt>Panorama check</dt><dd id="meta-panorama">—</dd></div>
+      <div><dt>File type</dt><dd id="meta-filetype">—</dd></div>
+    </dl>
+  </section>
+
+  <section id="preview-area" class="preview-area" hidden aria-label="Image preview comparison">
+    <div class="preview-pane">
+      <h3>Original</h3>
+      <div class="preview-pane__canvas-wrap">
+        <canvas id="original-canvas"></canvas>
+      </div>
+    </div>
+    <div class="preview-pane">
+      <h3>Flipped</h3>
+      <div class="preview-pane__canvas-wrap">
+        <canvas id="flipped-canvas"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <section id="controls" class="controls" hidden aria-label="Actions">
+    <button type="button" id="flip-btn" class="btn btn--primary">Flip Horizontal</button>
+    <button type="button" id="download-png-btn" class="btn" disabled>Download PNG</button>
+    <button type="button" id="download-jpg-btn" class="btn" disabled>Download JPG</button>
+    <button type="button" id="reset-btn" class="btn btn--ghost">Reset</button>
+  </section>
+
+  <p class="privacy-note">All processing runs locally in your browser. Images are not uploaded.</p>
+</main>
+
+<script src="js/app.js" defer></script>
+</body>
+</html>
