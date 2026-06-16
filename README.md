@@ -59,6 +59,19 @@ and visit `http://localhost:8000`.
 3. Output directory: repository root.
 4. Deploy.
 
+## Deploy to Vercel
+
+1. Open Vercel dashboard.
+2. Click "Add New Project".
+3. Import this GitHub repository (`airesearchagl-art/Panorama-Flipper`).
+4. Set Framework Preset to "Other".
+5. Leave Build Command empty.
+6. Set Output Directory to `.` or leave it empty.
+7. Set Production Branch to `main`.
+8. Click Deploy.
+
+This project is a static HTML/CSS/JavaScript app and does not require a build step. Once connected, every push to `main` triggers an automatic production deployment, and the app becomes available at a URL like `https://xxxx.vercel.app`.
+
 ## Privacy
 
 All image processing happens locally in your browser using the Canvas API. Images are never uploaded to any server or third-party service.
